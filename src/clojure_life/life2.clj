@@ -30,17 +30,6 @@
           (vec (repeat rows (vec (repeat cols false))))
           rc-pairs))
 
-(defn apply-rule
-  [world rule-fn]
-  (let [rows (count world)
-        cols (count (first world))]
-    (apply init-world rows cols
-           (remove nil?
-                   (map (fn [[row col alive]]
-                          (when (rule-fn row col alive (neighbors world row col))
-                            [row col]))
-                        (world-seq world))))))
-
 (defn neighbors
   "Get neighbor count at row column position in world."
   [world r c]
@@ -52,6 +41,16 @@
           :when (not (and (= row r) (= col c)))]
       (alive? world row col)))))
 
+(defn apply-rule
+  [world rule-fn]
+  (let [rows (count world)
+        cols (count (first world))]
+    (apply init-world rows cols
+           (remove nil?
+                   (map (fn [[row col alive]]
+                          (when (rule-fn row col alive (neighbors world row col))
+                            [row col]))
+                        (world-seq world))))))
 
 ;;;; Apply the life rules using the "world" data structure
 
