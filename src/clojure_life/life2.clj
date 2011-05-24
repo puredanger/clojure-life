@@ -1,4 +1,4 @@
-(ns clojure-life.prot)
+(ns clojure-life.life2)
 
 ;;;; Data structure manipulation
 

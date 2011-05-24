@@ -1,4 +1,4 @@
-(ns clojure-life.core)
+(ns clojure-life.life1)
 
 (def DEAD 0)
 (def ALIVE 1)
