@@ -37,9 +37,21 @@
     (apply init-world rows cols
            (remove nil?
                    (map (fn [[row col alive]]
-                          (when (rule-fn row col alive (neighbors row col world))
+                          (when (rule-fn row col alive (neighbors world row col))
                             [row col]))
                         (world-seq world))))))
+
+(defn neighbors
+  "Get neighbor count at row column position in world."
+  [world r c]
+  {:post [(and (<= 0 % 8))]}
+  (count
+   (filter true?
+    (for [row (range (dec r) (+ r 2))
+          col (range (dec c) (+ c 2))
+          :when (not (and (= row r) (= col c)))]
+      (alive? world row col)))))
+
 
 ;;;; Apply the life rules using the "world" data structure
 
@@ -50,17 +62,6 @@
   (if alive
     (<= 2 neighbor-count 3)
     (= neighbor-count 3)))
-
-(defn neighbors
-  "Get neighbor count at row column position in world."
-  [r c world]
-  {:post [(and (<= 0 % 8))]}
-  (count
-   (filter true?
-    (for [row (range (dec r) (+ r 2))
-          col (range (dec c) (+ c 2))
-          :when (not (and (= row r) (= col c)))]
-      (alive? world row col)))))
 
 (defn update-world
   "Take world and compute new world based on the life function."
