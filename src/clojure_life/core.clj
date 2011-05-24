@@ -26,7 +26,7 @@
   "Calculate an in-world (torus) value for x.  x may be negative
    or out of bounds."
   [x n]
-  (mod (+ x n) n))
+  (mod x n))
 
 (defn get-cell
   "Get cell value at row column position in world."
@@ -87,5 +87,5 @@
                        [0 0 0 1 0 0 0 0 0 0]
                        [0 1 0 1 0 0 0 0 0 0]
                        [0 0 1 1 0 0 0 0 0 0]]
-                      (repeat 7 (repeat 10 0)))]
+                      (repeat 6 (repeat 10 0)))]
     (life glider-world iters)))
