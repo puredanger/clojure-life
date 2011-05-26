@@ -1,3 +1,4 @@
+;; Copyright 2011, Alex Miller, Apache 2 license
 (ns clojure-life.life-seq)
 
 ;;;; Data structure manipulation

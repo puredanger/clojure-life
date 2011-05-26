@@ -33,6 +33,6 @@ with an initial glider.
 
 ## License
 
-Copyright (C) 2011 Alex Miller
-Distributed under the Apache 2 License
+* Copyright (C) 2011 Alex Miller
+* Distributed under the Apache 2 License
 
