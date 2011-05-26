@@ -7,9 +7,7 @@
   (rows [world] "Number of rows in world")
   (cols [world] "Number of columns in world")
   (alive? [world row col] "Is the cell at [row col] alive?")
-  (mark-alive [world row col] "Mark the cell at [row col] alive")
-  (world-seq [world] "Retrieve a seq of every cell in the world as [row col alive?].")
-  (render [world] "Render the world to println"))
+  (mark-alive [world row col] "Mark the cell at [row col] alive"))
 
 ;; The world is represented by a vector of vector of booleans.
 ;; Both rows and columns wrap around to the other side.
@@ -18,34 +16,32 @@
   IPersistentVector
   (rows [world] (count world))
   (cols [world] (count (first world)))
-
   (alive? [world r c]
           (boolean (get-in world [(mod r (rows world)) (mod c (cols world))])))
-  
-  (world-seq [world]
-    (for [row (range (rows world))
-          col (range (cols world))]
-      [row col (alive? world row col)]))
-
-  (render [world]
-    (doseq [line world]
-      (doseq [cell line]
-        (print (if cell \# \.)))
-      (println))))
-
-;; data structure functions below this point don't need to understand
-;; internal structure of the world data
-
-(defn mark-alive [world [row col]]
-  (update-in world [row col] (constantly true)))
+  (mark-alive [world row col]
+              (update-in world [row col] (constantly true))))
 
 (defn init-world
   "Create a new world. rc-pairs is a seq of [row col] of cells to
    initially mark alive."
   [rows cols & rc-pairs]
-  (reduce mark-alive
+  (reduce #(mark-alive %1 (first %2) (second %2))
           (vec (repeat rows (vec (repeat cols false))))
           rc-pairs))
+
+;; data structure functions below this point don't need to understand
+;; internal structure of the world data
+
+(defn world-seq [world]
+  (for [row (range (rows world))
+        col (range (cols world))]
+    [row col (alive? world row col)]))
+
+(defn render [world]
+  (doseq [row (range (rows world))]
+    (doseq [col (range (cols world))]
+      (print (if (alive? world row col) \# \.)))
+    (println)))
 
 (defn neighbors
   "Get neighbor count at row-column position in world."

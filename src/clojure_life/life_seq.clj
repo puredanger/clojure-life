@@ -11,22 +11,6 @@
 (defn alive? [world r c]
   (boolean (get-in world [(mod r (rows world)) (mod c (cols world))])))
 
-(defn world-seq
-  "Retrieve a seq of every cell in the world as [row col alive?]."
-  [world]
-  (for [row (range (rows world))
-        col (range (cols world))]
-    [row col (alive? world row col)]))
-
-(defn render [world]
-  (doseq [line world]
-    (doseq [cell line]
-      (print (if cell \# \.)))
-    (println)))
-
-;; data structure functions below this point don't need to understand
-;; internal structure of the world data
-
 (defn mark-alive
   [world [row col]]
   (update-in world [row col] (constantly true)))
@@ -38,6 +22,22 @@
   (reduce mark-alive
           (vec (repeat rows (vec (repeat cols false))))
           rc-pairs))
+
+;; data structure functions below this point don't need to understand
+;; internal structure of the world data
+
+(defn world-seq
+  "Retrieve a seq of every cell in the world as [row col alive?]."
+  [world]
+  (for [row (range (rows world))
+        col (range (cols world))]
+    [row col (alive? world row col)]))
+
+(defn render [world]
+  (doseq [row (range (rows world))]
+    (doseq [col (range (cols world))]
+      (print (if (alive? world row col) \# \.)))
+    (println)))
 
 (defn neighbors
   "Get neighbor count at row-column position in world."
