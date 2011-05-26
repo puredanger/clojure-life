@@ -16,7 +16,10 @@ data representation, concurrency, etc.
 This ordering is how I wrote them and can be used to illustrate some 
 evolution:
 
-* life_ 
+* life1 - my first attempt
+* life_seq - a rewrite making better use of seqs and functional data
+* life_prot - introducing a protocol around the core data
+* life_sparse - swap data impl under protocol to only hold live cells 
 
 ## Build and run
 
