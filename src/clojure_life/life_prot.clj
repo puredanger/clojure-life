@@ -1,34 +1,42 @@
-(ns clojure-life.life-seq)
+(ns clojure-life.life-prot
+  (:import [clojure.lang IPersistentVector]))
 
 ;;;; Data structure manipulation
+
+(defprotocol World
+  (rows [world] "Number of rows in world")
+  (cols [world] "Number of columns in world")
+  (alive? [world row col] "Is the cell at [row col] alive?")
+  (mark-alive [world row col] "Mark the cell at [row col] alive")
+  (world-seq [world] "Retrieve a seq of every cell in the world as [row col alive?].")
+  (render [world] "Render the world to println"))
 
 ;; The world is represented by a vector of vector of booleans.
 ;; Both rows and columns wrap around to the other side.
 
-(defn rows [world] (count world))
-(defn cols [world] (count (first world)))
+(extend-protocol World
+  IPersistentVector
+  (rows [world] (count world))
+  (cols [world] (count (first world)))
 
-(defn alive? [world r c]
-  (boolean (get-in world [(mod r (rows world)) (mod c (cols world))])))
+  (alive? [world r c]
+          (boolean (get-in world [(mod r (rows world)) (mod c (cols world))])))
+  
+  (world-seq [world]
+    (for [row (range (rows world))
+          col (range (cols world))]
+      [row col (alive? world row col)]))
 
-(defn world-seq
-  "Retrieve a seq of every cell in the world as [row col alive?]."
-  [world]
-  (for [row (range (rows world))
-        col (range (cols world))]
-    [row col (alive? world row col)]))
-
-(defn render [world]
-  (doseq [line world]
-    (doseq [cell line]
-      (print (if cell \# \.)))
-    (println)))
+  (render [world]
+    (doseq [line world]
+      (doseq [cell line]
+        (print (if cell \# \.)))
+      (println))))
 
 ;; data structure functions below this point don't need to understand
 ;; internal structure of the world data
 
-(defn mark-alive
-  [world [row col]]
+(defn mark-alive [world [row col]]
   (update-in world [row col] (constantly true)))
 
 (defn init-world
