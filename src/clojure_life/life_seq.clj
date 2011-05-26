@@ -2,13 +2,18 @@
 
 ;;;; Data structure manipulation
 
+;; The world is represented by a vector of vector of booleans.
+;; Both rows and columns wrap around to the other side.
+
 (defn rows [world] (count world))
 (defn cols [world] (count (first world)))
 
 (defn alive? [world r c]
   (boolean (get-in world [(mod r (rows world)) (mod c (cols world))])))
 
-(defn world-seq [world]
+(defn world-seq
+  "Retrieve a seq of every cell in the world as [row col alive?]."
+  [world]
   (for [row (range (rows world))
         col (range (cols world))]
     [row col (alive? world row col)]))
@@ -23,15 +28,19 @@
   [world [row col]]
   (update-in world [row col] (constantly true)))
 
+;; data structure functions below this point don't need to understand
+;; internal structure of the world data
+
 (defn init-world
-  "Create a new instance of the world that implements the World protocol."
+  "Create a new world. rc-pairs is a seq of [row col] of cells to
+   initially mark alive."
   [rows cols & rc-pairs]
   (reduce mark-alive
           (vec (repeat rows (vec (repeat cols false))))
           rc-pairs))
 
 (defn neighbors
-  "Get neighbor count at row column position in world."
+  "Get neighbor count at row-column position in world."
   [world r c]
   {:post [(and (<= 0 % 8))]}
   (count
@@ -41,16 +50,17 @@
           :when (not (and (= row r) (= col c)))]
       (alive? world row col)))))
 
-(defn apply-rule
-  [world rule-fn]
-  (let [rows (count world)
-        cols (count (first world))]
-    (apply init-world rows cols
-           (remove nil?
-                   (map (fn [[row col alive]]
-                          (when (rule-fn row col alive (neighbors world row col))
-                            [row col]))
-                        (world-seq world))))))
+(defn map-world
+  "Map a rule-fn over every cell in the world.  The rule-fn should be
+   of the form:
+     (fn [row col alive? neighbor-count]) -> boolean"
+  [rule-fn world]
+  (->> (world-seq world)
+       (map (fn [[row col alive]]
+              (when (rule-fn row col alive (neighbors world row col))
+                [row col])))
+       (remove nil?)
+       (apply init-world (rows world) (cols world))))
 
 ;;;; Apply the life rules using the "world" data structure
 
@@ -65,7 +75,7 @@
 (defn update-world
   "Take world and compute new world based on the life function."
   [world]
-  (apply-rule world life-rule))
+  (map-world life-rule world))
 
 ;;;; Main entry
 
