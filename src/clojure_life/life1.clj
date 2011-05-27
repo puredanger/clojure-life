@@ -39,7 +39,7 @@
 (defn neighbors
   "Get neighbor count at row column position in world."
   [r c world]
-  {:post [(and (<= 0 % 8))]}
+  {:post [(<= 0 % 8)]}
   (apply +
          (for [row (range (dec r) (+ r 2))
                col (range (dec c) (+ c 2))
