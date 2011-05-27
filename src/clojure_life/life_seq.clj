@@ -57,10 +57,9 @@
      (fn [row col alive? neighbor-count]) -> boolean"
   [rule-fn world]
   (->> (world-seq world)
-       (map (fn [[row col alive]]
-              (when (rule-fn row col alive (neighbors world row col))
-                [row col])))
-       (remove nil?)
+       (filter (fn [[row col alive]]
+                (when (rule-fn row col alive (neighbors world row col))
+                  [row col])))
        (apply init-world (rows world) (cols world))))
 
 ;;;; Apply the life rules using the "world" data structure
