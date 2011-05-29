@@ -39,10 +39,12 @@
     [row col (alive? world row col)]))
 
 (defn render [world]
-  (doseq [row (range (rows world))]
-    (doseq [col (range (cols world))]
-      (print (if (alive? world row col) \# \.)))
-    (println)))
+  (apply str
+         (flatten
+          (for [row (range (rows world))]
+            [(for [col (range (cols world))]
+               (if (alive? world row col) \# \.))
+             \newline]))))
 
 (defn neighbors
   "Get neighbor count at row-column position in world."
@@ -93,7 +95,7 @@
       (do
         (println)
         (println "Iteration" (- iterations remaining-iterations) ":")
-        (render world)
+        (print (render world))
         (recur (dec remaining-iterations) (update-world world))))))
 
 ;;;; Test with glider
